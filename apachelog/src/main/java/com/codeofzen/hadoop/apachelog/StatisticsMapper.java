@@ -20,6 +20,7 @@ public class StatisticsMapper extends MapReduceBase implements Mapper<LongWritab
    
    private final LogParser logParser = new LogParser();
    
+   
    /**
     * Implements interface Mapper
     */

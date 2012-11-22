@@ -14,14 +14,28 @@ import java.io.IOException;
  */
 public class Statistics implements Writable {
    
+   private long requests;
+   private long errors;
    private long minLength;
    private long maxLength;
    private long averageLength;
    
    
+   public Statistics() {}
+   
+   public Statistics(long requests, long errors, long minLength, long maxLength, long averageLength) {
+      this.requests  = requests;
+      this.errors    = errors;
+      this.minLength = minLength;
+      this.maxLength = maxLength;
+      this.averageLength = averageLength;
+   }
+   
    
    @Override
    public void readFields(DataInput input) throws IOException {
+      this.requests  = input.readLong();
+      this.errors    = input.readLong();
       this.minLength = input.readLong();
       this.maxLength = input.readLong();
       this.averageLength = input.readLong();
@@ -30,9 +44,17 @@ public class Statistics implements Writable {
    
    @Override
    public void write(DataOutput output) throws IOException {
+      output.writeLong(this.requests);
+      output.writeLong(this.errors);
       output.writeLong(this.minLength);
       output.writeLong(this.maxLength);
       output.writeLong(this.averageLength);
+   }
+   
+   
+   @Override
+   public String toString() {
+      return this.requests + "," + this.errors + "," + this.minLength + "," + this.maxLength + "," + this.averageLength;
    }
    
    

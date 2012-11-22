@@ -14,15 +14,38 @@ import java.util.Iterator;
 /**
  * Implementation of the Reduce-step for analysing Apache-logfile statistics
  */ 
-public class StatisticsReducer extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
+public class StatisticsReducer extends MapReduceBase implements Reducer<Text, LogData, Text, Statistics> {
    
    
    /**
     *  Implements interface Reducer
     */
    @Override
-   public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter ) throws IOException {
+   public void reduce(Text key, Iterator<LogData> values, OutputCollector<Text, Statistics> output, Reporter reporter ) throws IOException {
+   
+      // extract information from values
+      long counter = 0;
+      long errorCounter = 0;
+      long sum = 0;
+      long min = Long.MAX_VALUE;
+      long max = 0;
       
+      while(values.hasNext()) {
+         
+         LogData data = values.next();
+         ++counter;
+         
+         long length = data.getLength();
+         
+         sum += data.getLength();
+                  
+         if(length < min) { min = length; }
+         if(length > max) { max = length; }
+       
+         if( 200 > data.getStatusCode() || 399 < data.getStatusCode()) { ++errorCounter; }
+      }
+      
+      output.collect(key, new Statistics(counter, errorCounter, min, max, (sum / counter) ));
    }
    
 }
